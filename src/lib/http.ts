@@ -39,7 +39,7 @@ const DEFAULT_TIMEOUT_MS = 8_000;
 const DEFAULT_RETRIES = 2;
 
 const USER_AGENT =
-  "SportX/1.0 (+https://github.com/pheelip1577/sportx-football-analytics)";
+  "SportX/1.0 (+https://github.com/pheelip1577/sportx)";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
