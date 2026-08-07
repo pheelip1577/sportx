@@ -1,0 +1,209 @@
+@import "tailwindcss";
+
+/*
+ * SportX design system
+ * --------------------
+ * Concept: a broadcast-grade data instrument. Near-black with a pitch-green
+ * undertone (floodlit grass at night), a single acid-lime accent used sparingly
+ * for emphasis, and amber reserved exclusively for genuinely live data so the
+ * colour itself carries meaning.
+ *
+ * Typography roles:
+ *   Instrument Serif - editorial display moments only
+ *   Archivo          - all interface text
+ *   IBM Plex Mono    - every number, tabular-aligned
+ */
+
+/*
+ * Fonts are loaded and self-hosted by next/font in app/layout.tsx, which
+ * exposes them as --font-archivo / --font-instrument / --font-plex. Self-hosting
+ * avoids a render-blocking round trip to a third party and cannot break when
+ * Google rotates its asset URLs.
+ */
+
+@theme {
+  /* Surfaces form a deliberate elevation ladder: base -> raised -> floating. */
+  --color-pitch-base: #070d0a;
+  --color-pitch-raised: #0d1712;
+  --color-pitch-float: #14211b;
+  --color-pitch-line: #1e2f26;
+  --color-pitch-line-bright: #2c4437;
+
+  --color-chalk: #eaf2ec;
+  --color-chalk-dim: #9fb2a6;
+  --color-chalk-faint: #67796e;
+
+  /* Accent: floodlight lime. Used for emphasis, never as a background wash. */
+  --color-flood: #c3ff4a;
+  --color-flood-dim: #93c22f;
+
+  /* Amber means live. Nothing static may use it. */
+  --color-live: #ffa23a;
+  --color-alert: #ff5470;
+
+  --font-display: var(--font-instrument), ui-serif, Georgia, serif;
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex), ui-monospace, "SFMono-Regular", monospace;
+
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-pitch-line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-pitch-base);
+    color: var(--color-chalk);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+
+    /*
+     * Atmosphere: two soft floodlight pools plus a fine chalk grid, so the
+     * background has depth without competing with data.
+     */
+    background-image:
+      radial-gradient(
+        ellipse 80% 50% at 15% -10%,
+        rgba(195, 255, 74, 0.07),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 60% 40% at 85% 0%,
+        rgba(120, 200, 255, 0.05),
+        transparent 55%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(7, 13, 10, 0.6) 60%,
+        var(--color-pitch-base) 100%
+      );
+    background-attachment: fixed;
+  }
+
+  /* Every numeral in the app aligns in a column. */
+  .tabular,
+  [data-numeric] {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  ::selection {
+    background: var(--color-flood);
+    color: var(--color-pitch-base);
+  }
+
+  /* Focus is always visible and always the accent - no exceptions. */
+  :focus-visible {
+    outline: 2px solid var(--color-flood);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-pitch-base);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-pitch-line);
+    border-radius: 999px;
+    border: 2px solid var(--color-pitch-base);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-pitch-line-bright);
+  }
+}
+
+@layer utilities {
+  /* Chalk grid overlay - the pitch-marking motif, used on hero surfaces. */
+  .chalk-grid {
+    background-image:
+      linear-gradient(rgba(195, 255, 74, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(195, 255, 74, 0.045) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* Fine grain, to keep large dark areas from banding. */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Staggered entrance. Transform + opacity only. */
+  .reveal {
+    animation: reveal 0.6s var(--ease-spring) both;
+  }
+
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .live-pulse {
+    animation: live-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes live-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.45;
+      transform: scale(0.82);
+    }
+  }
+
+  /* Percentile meters grow from the left on first paint. */
+  .meter-grow {
+    animation: meter-grow 0.9s var(--ease-spring) both;
+    transform-origin: left center;
+  }
+
+  @keyframes meter-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
