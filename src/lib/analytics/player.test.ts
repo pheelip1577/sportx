@@ -148,4 +148,17 @@ describe("findScorerByName", () => {
   it("returns null for an empty query", () => {
     expect(findScorerByName(withAccents, "   ")).toBeNull();
   });
+
+  it("prioritizes players with higher goals when name length difference ties", () => {
+    const candidates = [
+      scorer("Jane Smith", 5, 20),
+      scorer("John Smith", 18, 20),
+      scorer("Jack Smith", 10, 20),
+    ];
+    // "Smith" query diff is identical for all three (10 - 5 = 5 chars diff)
+    const result = findScorerByName(candidates, "Smith");
+    expect(result).not.toBeNull();
+    expect(result?.player.name).toBe("John Smith");
+    expect(result?.goals).toBe(18);
+  });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { NewsArticle } from "@/lib/types";
-import { dedupeArticles } from "./news";
+import { decodeEntities, dedupeArticles } from "./news";
 
 function article(overrides: Partial<NewsArticle> & { title: string; url: string }): NewsArticle {
   return {
@@ -99,5 +99,33 @@ describe("dedupeArticles", () => {
       [article({ title: "", url: "https://example.com/1" })],
     ]);
     expect(merged).toHaveLength(0);
+  });
+});
+
+describe("decodeEntities", () => {
+  it("decodes named entities", () => {
+    expect(decodeEntities("&amp; &lt; &gt; &quot; &apos; &nbsp;")).toBe("& < > \" '  ");
+  });
+
+  it("decodes decimal numeric character references", () => {
+    expect(decodeEntities("Arsenal&#39;s win &#8217;special&#8217;")).toBe("Arsenal's win ’special’");
+  });
+
+  it("decodes hexadecimal character entity references", () => {
+    expect(decodeEntities("Arsenal&#x27;s victory &#x2019;superb&#x2019;")).toBe("Arsenal's victory ’superb’");
+    expect(decodeEntities("&#x3C;tag&#x3E; &amp; &#x26;")).toBe("<tag> & &");
+  });
+
+  it("handles case-insensitive hex characters", () => {
+    expect(decodeEntities("&#x2F; &#x2f;")).toBe("/ /");
+  });
+
+  it("safely handles invalid or out-of-range code points", () => {
+    expect(decodeEntities("&#x9999999;")).toBe("&#x9999999;");
+    expect(decodeEntities("&#0;")).toBe("");
+  });
+
+  it("leaves unknown entities unchanged without crashing", () => {
+    expect(decodeEntities("&foobar; &unknown;")).toBe("&foobar; &unknown;");
   });
 });

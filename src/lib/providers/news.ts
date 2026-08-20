@@ -40,15 +40,19 @@ const ENTITIES: Record<string, string> = {
 };
 
 /**
- * Decode only the fixed set of named entities above, plus numeric ones.
+ * Decode only the fixed set of named entities above, plus numeric (decimal and hex) ones.
  * Unknown entities are left as literal text rather than resolved, which is
  * what keeps this immune to entity-expansion attacks.
  */
-function decodeEntities(input: string): string {
+export function decodeEntities(input: string): string {
   return input
     .replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (m) => ENTITIES[m] ?? m)
     .replace(/&#(\d{1,6});/g, (_, code: string) => {
       const n = Number.parseInt(code, 10);
+      return n > 0 && n < 0x10ffff ? String.fromCodePoint(n) : "";
+    })
+    .replace(/&#x([0-9a-fA-F]{1,6});/gi, (_, hex: string) => {
+      const n = Number.parseInt(hex, 16);
       return n > 0 && n < 0x10ffff ? String.fromCodePoint(n) : "";
     });
 }

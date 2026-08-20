@@ -166,11 +166,14 @@ export function findScorerByName(
   if (partial.length === 0) return null;
 
   // Prefer the closest name length so a short query does not match a long name
-  // ahead of the surname it actually refers to.
-  partial.sort(
-    (a, b) =>
-      Math.abs(normaliseName(a.player.name).length - q.length) -
-      Math.abs(normaliseName(b.player.name).length - q.length),
-  );
+  // ahead of the surname it actually refers to. Break ties by higher goals scored.
+  partial.sort((a, b) => {
+    const diffA = Math.abs(normaliseName(a.player.name).length - q.length);
+    const diffB = Math.abs(normaliseName(b.player.name).length - q.length);
+    if (diffA !== diffB) {
+      return diffA - diffB;
+    }
+    return b.goals - a.goals;
+  });
   return partial[0];
 }
