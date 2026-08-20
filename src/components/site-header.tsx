@@ -4,6 +4,7 @@ import { features } from "@/lib/config";
 const NAV = [
   { href: "/", label: "Overview" },
   { href: "/live", label: "Live" },
+  { href: "/fixtures", label: "Fixtures" },
   { href: "/table", label: "Table" },
   { href: "/scorers", label: "Scorers" },
   { href: "/news", label: "News" },

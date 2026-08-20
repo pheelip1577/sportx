@@ -13,6 +13,7 @@ interface Turn {
 
 const SUGGESTIONS = [
   "Who is top of the Premier League?",
+  "When are the upcoming Premier League fixtures?",
   "What matches are live right now?",
   "How good is Arsenal's defence compared to the rest of the league?",
 ];
@@ -146,7 +147,7 @@ export function AskConsole() {
           onChange={(event) => setInput(event.target.value.slice(0, MAX_LENGTH))}
           maxLength={MAX_LENGTH}
           disabled={pending}
-          placeholder="Ask about tables, live matches or scorers…"
+          placeholder="Ask about fixtures, tables, live matches or scorers…"
           className="flex-1 rounded-lg border border-pitch-line bg-pitch-raised px-4 py-2.5 text-[14px] text-chalk placeholder:text-chalk-faint focus:border-flood/40 disabled:opacity-60"
         />
         <button

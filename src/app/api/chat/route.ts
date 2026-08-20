@@ -3,7 +3,12 @@ import { GoogleGenAI, Type, type FunctionDeclaration } from "@google/genai";
 import { z } from "zod";
 import { env, features, getLeague, isKnownLeague, LEAGUES } from "@/lib/config";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
-import { getLeagueTable, getLiveMatches, getScorerBoard } from "@/lib/data";
+import {
+  getFixtures,
+  getLeagueTable,
+  getLiveMatches,
+  getScorerBoard,
+} from "@/lib/data";
 import { findScorerByName } from "@/lib/analytics";
 
 export const dynamic = "force-dynamic";
@@ -66,6 +71,22 @@ const functionDeclarations: FunctionDeclaration[] = [
     description:
       "Every football match currently in play worldwide, with scores and clock.",
     parameters: { type: Type.OBJECT, properties: {} },
+  },
+  {
+    name: "get_upcoming_fixtures",
+    description:
+      "Upcoming match schedule, fixture list, and kickoff times for one of the supported competitions.",
+    parameters: {
+      type: Type.OBJECT,
+      properties: {
+        league: {
+          type: Type.STRING,
+          enum: LEAGUE_IDS,
+          description: "Which competition to check fixtures for.",
+        },
+      },
+      required: ["league"],
+    },
   },
   {
     name: "get_player_stats",
@@ -160,6 +181,34 @@ async function runTool(name: string, args: Record<string, unknown>): Promise<Too
           score: `${m.homeScore ?? 0}-${m.awayScore ?? 0}`,
           clock: m.progress,
         })),
+      };
+    }
+
+    case "get_upcoming_fixtures": {
+      const leagueId = String(args.league ?? "");
+      if (!isKnownLeague(leagueId)) {
+        return { available: false, reason: `Unsupported competition: ${leagueId}` };
+      }
+      const league = getLeague(leagueId);
+      const result = await getFixtures(league);
+      if (!result.ok) return { available: false, reason: result.message };
+
+      const upcoming = result.data.upcoming ?? [];
+      return {
+        available: true,
+        competition: league.name,
+        count: upcoming.length,
+        fixtures: upcoming.slice(0, 15).map((m) => ({
+          home: m.home.name,
+          away: m.away.name,
+          kickoff: m.kickoff,
+          round: m.round ? `Matchday ${m.round}` : null,
+          venue: m.venue,
+        })),
+        note:
+          upcoming.length === 0
+            ? `No upcoming fixtures are currently scheduled in the active window for ${league.name}.`
+            : undefined,
       };
     }
 
