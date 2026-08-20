@@ -55,11 +55,13 @@ export default async function FixturesPage({
           return (
             <div className="space-y-6">
               {data.truncated ? (
-                <Notice>
-                  Showing sample fixtures from the keyless feed tier. Add a
-                  football-data.org API key to your environment to access the
-                  complete multi-week schedule.
-                </Notice>
+                <Card>
+                  <Notice>
+                    Showing sample fixtures from the keyless feed tier. Add a
+                    football-data.org API key to your environment to access the
+                    complete multi-week schedule.
+                  </Notice>
+                </Card>
               ) : null}
 
               <div className="grid gap-6 lg:grid-cols-2">

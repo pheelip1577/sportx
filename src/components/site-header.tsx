@@ -16,7 +16,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4 sm:px-6">
         <Link
           href="/"
-          className="group flex items-baseline gap-2 rounded-sm transition-opacity hover:opacity-90"
+          className="group flex shrink-0 items-baseline gap-2 rounded-sm transition-opacity hover:opacity-90"
         >
           <span className="text-xl font-bold leading-none tracking-[-0.04em] text-chalk">
             SportX
@@ -28,7 +28,7 @@ export function SiteHeader() {
         </Link>
 
         <nav aria-label="Primary" className="min-w-0 flex-1">
-          <ul className="flex items-center gap-1 overflow-x-auto">
+          <ul className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {NAV.map((item) => (
               <li key={item.href}>
                 <Link
@@ -45,7 +45,7 @@ export function SiteHeader() {
         {features.assistant ? (
           <Link
             href="/ask"
-            className="hidden shrink-0 rounded-md border border-flood/30 bg-flood/10 px-3 py-1.5 text-[13px] font-medium text-flood transition-colors duration-150 hover:bg-flood/20 sm:block"
+            className="shrink-0 rounded-md border border-flood/30 bg-flood/10 px-2.5 py-1 text-[13px] font-medium text-flood transition-colors duration-150 hover:bg-flood/20 sm:px-3 sm:py-1.5"
           >
             Ask
           </Link>

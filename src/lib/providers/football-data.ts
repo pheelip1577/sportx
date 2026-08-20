@@ -119,7 +119,7 @@ function numOrNull(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
-interface RawTeam {
+export interface RawTeam {
   id?: number;
   name?: string;
   shortName?: string;
@@ -127,7 +127,7 @@ interface RawTeam {
   crest?: string;
 }
 
-function mapTeam(raw: RawTeam | undefined): TeamRef {
+export function mapTeam(raw: RawTeam | undefined): TeamRef {
   return {
     id: raw?.id ? String(raw.id) : "unknown",
     name: raw?.name ?? "Unknown",
@@ -272,7 +272,7 @@ export async function getScorers(
   }));
 }
 
-interface RawMatch {
+export interface RawMatch {
   id?: number;
   utcDate?: string;
   status?: string;
@@ -285,7 +285,7 @@ interface RawMatch {
   };
 }
 
-function mapStatus(status: string | undefined): MatchState {
+export function mapStatus(status: string | undefined): MatchState {
   switch (status) {
     case "IN_PLAY":
     case "PAUSED":
@@ -302,7 +302,7 @@ function mapStatus(status: string | undefined): MatchState {
   }
 }
 
-function mapMatch(raw: RawMatch, competition: string): Match {
+export function mapMatch(raw: RawMatch, competition: string): Match {
   return {
     id: raw.id ? String(raw.id) : crypto.randomUUID(),
     league: competition,
